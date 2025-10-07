@@ -99,3 +99,14 @@ Acumulado Vendas =
 -- OBS: ALL remove o filtro da tabela de calendário para calcular o acumulado.
 
 
+Valor e Porcetagem = 
+VAR TotalGeral = 
+    CALCULATE(
+        COUNTROWS(DISTINCT('Linkedin_certificacoes_meus_dados'[nome])),
+        REMOVEFILTERS(dim_Calendario)
+    ) -- Calculo do total geral sem filtros de categoria data, para gerar o valor bruto.
+VAR ValorAtual = [Medida 2] -- Calculo normal para rótulo de dados.
+VAR Porcentagem = DIVIDE(ValorAtual, TotalGeral) Calculo da Porcetagem 
+
+RETURN
+FORMAT(ValorAtual, "#,##0") & " (" & FORMAT(Porcentagem, "0.0%") & ")"  -- Formatação dos  valores
