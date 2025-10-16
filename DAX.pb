@@ -110,3 +110,33 @@ VAR Porcentagem = DIVIDE(ValorAtual, TotalGeral) Calculo da Porcetagem
 
 RETURN
 FORMAT(ValorAtual, "#,##0") & " (" & FORMAT(Porcentagem, "0.0%") & ")"  -- Formatação dos  valores
+
+-- OBS: Ranqueando 
+RankClasse = 
+VAR ClasseAtual = SELECTEDVALUE(Vendas[Coluna]) 
+
+VAR TabelaParaRank =
+    -- 1. Cria a tabela de iteração: Todas as combinações de Usuário e Classe.
+    FILTER(
+        ALL(Vendas[Usuario], Vendas[Coluna]),
+        -- 2. Filtra a tabela de iteração apenas para a Classe atual.
+        Vendas[Coluna] = ClasseAtual
+    )
+
+VAR RankCalculado =
+    RANKX(
+        TabelaParaRank,
+        
+        -- 3. Expressão para Classificar (A Chave):
+        -- Calcula o Total Vendas removendo o filtro da coluna Filial.
+        CALCULATE(
+            [Vendas],
+            REMOVEFILTERS(Vendas[Filial]) -- Ignora qualquer filtro aplicado à coluna Filial
+        ), 
+        
+        -- 4. Ordem e Empates
+        , DESC, DENSE
+    )
+
+RETURN
+    RankCalculado
