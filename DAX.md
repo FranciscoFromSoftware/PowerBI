@@ -1,4 +1,6 @@
--- Calendário com o dia da semana em português
+# Snipets Power BI
+
+## Calendário com o dia da semana em português
 
 dCalendario =
 ADDCOLUMNS(
@@ -13,8 +15,23 @@ ADDCOLUMNS(
     "Mês Ano", CONCATENATE(YEAR([Date]), CONCATENATE("-", FORMAT([Date], "MMM")))
 )
 
--- Medida com icones de status
+## Indíce e Ranks
 
+- **Adicionar um rank de Classificação**: RANKX fómula para gerar o Rank começando pelas colunas de categoria que o rank vai considerar, no exemplo estou usando o formato Vendedor e Filial ou seja vai criar um RANK com base na filial e vendedor.
+Ranking = 
+RANKX(
+    ALL('Planilha1'[Vendedor],Planilha1[Filial]),
+    CALCULATE(SUM('Planilha1'[Valor da Venda (R$)]))
+    ,,
+    DESC,
+    Dense
+)
+
+
+
+## Formatação de dados
+
+### **Medida com icones de status
 medidasStatusIcon =
 ADDCOLUMNS(
     dCalendario,
@@ -40,6 +57,16 @@ RETURN IF(
         )
     )
 )    
+
+Ícone Ranking = 
+SWITCH(
+    TRUE(),
+    [Ranking] = 1, "🏆",
+    [Ranking] = 2, "🥈",
+    [Ranking] = 3, "🥉",
+    [Ranking] >= 4, "🏃‍♂️‍➡️",
+    BLANK()
+)
 
 # symbl.cc tem mais opções para esolher setas
 
@@ -140,3 +167,12 @@ VAR RankCalculado =
 
 RETURN
     RankCalculado
+
+Ranking = 
+RANKX(
+    ALL('Aplicativo_fMeuDia'[AppsGamesSoftware]),
+    CALCULATE(SUM('Aplicativo_fMeuDia'[duration_seconds]))
+    ,,
+    DESC,
+    Dense
+)
