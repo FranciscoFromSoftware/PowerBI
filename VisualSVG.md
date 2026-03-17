@@ -213,10 +213,27 @@ VAR vQuadrados =
         'dCalendario'[Date], ASC
     )
 
+VAR vYRodape = vSVGAltura - 20 -- Alinha o Total e a Legenda na mesma altura
+
+VAR vLegendaDiscreta = 
+    "<g font-family='Arial' font-size='8' fill='#666'>" &
+        -- Rótulo inicial
+        "<text x='150' y='" & vYRodape & "'>Menos</text>" &
+        -- Quadradinhos menores (10x10) e mais juntos
+        "<rect x='180' y='" & vYRodape - 8 & "' width='10' height='10' rx='2' fill='" & vCor0 & "' />" &
+        "<rect x='192' y='" & vYRodape - 8 & "' width='10' height='10' rx='2' fill='" & vCor1 & "' />" &
+        "<rect x='204' y='" & vYRodape - 8 & "' width='10' height='10' rx='2' fill='" & vCor2 & "' />" &
+        "<rect x='216' y='" & vYRodape - 8 & "' width='10' height='10' rx='2' fill='" & vCor3 & "' />" &
+        "<rect x='228' y='" & vYRodape - 8 & "' width='10' height='10' rx='2' fill='" & vCor4 & "' />" &
+        -- Rótulo final
+        "<text x='242' y='" & vYRodape & "'>Mais</text>" &
+    "</g>"
+
 RETURN
 "data:image/svg+xml;utf8,<svg width='" & vSVGLargura & "' height='" & vSVGAltura & "' viewBox='0 0 " & vSVGLargura & " " & vSVGAltura & "' xmlns='http://www.w3.org/2000/svg'>" &
-    "<text x='20' y='30' font-family='Arial' font-size='18' font-weight='bold' fill='#111'>Vendas</text>" &
+    "<text x='20' y='35' font-family='Arial' font-size='18' font-weight='bold' fill='#111'>Vendas</text>" &
     vNomesDiasTopo &
     vQuadrados &
-    "<text x='20' y='" & vSVGAltura - 20 & "' font-family='Arial' font-size='12' font-weight='bold' fill='#03045E'>Total: R$ " & FORMAT(vTotalPeriodo, "#,##0") & "</text>" &
+    "<text x='20' y='" & vYRodape & "' font-family='Arial' font-size='11' font-weight='bold' fill='#03045E'>Total: R$ " & FORMAT(vTotalPeriodo, "#,##0") & "</text>" &
+    vLegendaDiscreta &
 "</svg>"
