@@ -2,17 +2,27 @@
 
 ## Calendário com o dia da semana em português
 
-dCalendario =
-ADDCOLUMNS(
-    CALENDAR(DATE(2024, 9, 7), MAX(fDados_Curva[Atributo])),
-    "Número da Semana", CONCATENATE(YEAR([Date]), CONCATENATE(" Sem-", WEEKNUM([Date], 16))),
-    "Dia da Semana", FORMAT([Date], "dddd"),
-    "Mes", FORMAT([Date], "MMMM"),
-    "Ano", YEAR([Date]),
-    "Ano e Mês", CONCATENATE(YEAR([Date]), CONCATENATE(" ", FORMAT([Date], "MMMM"))),
-    "Semana", CONCATENATE("SEM-", WEEKNUM([Date], 16)),
-    "Numero Semana", WEEKNUM([Date], 16),
-    "Mês Ano", CONCATENATE(YEAR([Date]), CONCATENATE("-", FORMAT([Date], "MMM")))
+dcalendario = 
+ADDCOLUMNS (
+    CALENDAR (
+        DATE(2001, 01,01),
+        MAX ( 'fDeputadoDespesa'[data_documento] )
+    ),
+    "Ano", YEAR ( [Date] ),
+    "Mes", FORMAT ( [Date], "MMMM" ),
+    "Mes_Num", MONTH ( [Date] ),
+    "AnoMesNum", FORMAT ( [Date], "YYYY/MMM" ),
+    "Trimestre", "T" & FORMAT ( [Date], "Q" ),
+    "Dia", DAY ( [Date] ),
+    "DiaSemana", FORMAT ( [Date], "dddd" ),
+    "DiaSemana_Num", WEEKDAY ( [Date], 1 ) - 1,
+    "SemanaAno", WEEKNUM ( [Date], 2 ),
+    "SemanaAno_Num", YEAR( [Date] ) & " - " & WEEKNUM ( [Date], 2 ),  
+    "MesAno", UPPER( FORMAT ( [Date], "mmm/yyyy" ) ),
+    "SemanaMes", INT ( ( DAY ( [Date] ) - 1 ) / 7 ) + 1,
+    "SemanaMes_Nome", "Sem - " & INT ( ( DAY ( [Date] ) - 1 ) / 7 ) + 1,
+    "MesAnoNum", CONCATENATE(YEAR([Date]),MONTH([Date])),
+    "IndiceMes", YEAR ( [Date] ) * 12 + MONTH ( [Date] )
 )
 
 ## Indíce e Ranks
@@ -176,3 +186,47 @@ RANKX(
     DESC,
     Dense
 )
+
+
+# Análise temporal personalizada
+
+Você precisa de uma tabela desconectada para ativar o filtro. Se usar a coluna de mês da própria tabela Calendário, o filtro corta o eixo do gráfico e você perde os 12 pontos.
+
+Filtro Mes =
+SUMMARIZE (
+    Calendario,
+    Calendario[AnoMes],        -- ex.: 202604 (número)
+    Calendario[MesAnoTexto],   -- ex.: "abr/2026"
+    "FimMes", MAX ( Calendario[Date] )
+)
+Em MesAnoTexto, use Classificar por coluna → AnoMes. Não crie relacionamento dessa tabela com nenhuma outra. Use Filtro Mes[MesAnoTexto] em um segmentador (slicer)
+
+Data_Ref =
+IF (
+    ISFILTERED ( 'Filtro Mes'[MesAnoTexto] ),
+    MAX ( 'Filtro Mes'[FimMes] ),
+    TODAY ()
+)
+
+Medida_12m_Personalizada =
+VAR DataRef = [DataRef]
+VAR FimPonto = MIN ( MAX ( D_Calendario[Date] ), DataRef )
+VAR Visivel =
+    MAX ( D_Calendario[Date] ) > EDATE ( EOMONTH ( DataRef, 0 ), -12 )
+    && MIN ( D_Calendario[Date] ) <= DataRef
+RETURN
+    IF (
+        Visivel,
+        CALCULATE (
+            [Medida],
+            DATESINPERIOD ( D_Calendario[Date], FimPonto, -12, MONTH )
+        )
+    )
+
+No gráfico
+Eixo X: D_Calendario[MesAnoTexto], classificado por AnoMes, com o tipo categórico (não hierarquia de datas).
+Valores: [Medida].
+Segmentador: Filtro Mes[MesAnoTexto].
+
+**Observações**
+A tabela Calendário precisa ser marcada como tabela de datas e ter datas contínuas.
