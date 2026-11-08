@@ -1,2 +1,0 @@
-# Adicionar Data de Atualizção
-DateTime.LocalNow()
