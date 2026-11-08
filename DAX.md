@@ -291,3 +291,11 @@ RETURN
 ### Observações
 
 - A tabela Calendário precisa ser marcada como tabela de datas e ter datas contínuas.
+
+
+## Video no Power BI
+-- Adcionar video no visual importado HTML content
+```HTML = "<video width='1280' height='700' autoplay muted loop controls>
+   <source src='" & [URL_Video] & "' type='video/mp4'>
+   Seu navegador não suporta a tag de vídeo.
+</video>"```
