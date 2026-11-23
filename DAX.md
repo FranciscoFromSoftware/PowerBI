@@ -299,3 +299,6 @@ RETURN
    <source src='" & [URL_Video] & "' type='video/mp4'>
    Seu navegador não suporta a tag de vídeo.
 </video>"```
+
+
+https://www.figma.com/design/vIjGuKXUxXa2tJg7wgTHQe/XscientProjects?node-id=0-1&t=KEdCt6Zc7bcMtPYp-1
