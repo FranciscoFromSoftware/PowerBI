@@ -302,3 +302,20 @@ RETURN
 
 
 https://www.figma.com/design/vIjGuKXUxXa2tJg7wgTHQe/XscientProjects?node-id=0-1&t=KEdCt6Zc7bcMtPYp-1
+
+Média Diária (Úteis + Sábados) = 
+VAR _ValorMensal = [Sua Medida de Valor Total] -- Substitua pela sua medida
+
+VAR _DiasValidosMes = 
+    CALCULATE(
+        COUNTROWS(dCalendario),
+        -- Garante que a contagem olhe para o mês inteiro, mesmo se houver filtro de dia no visual
+        ALLEXCEPT(dCalendario, dCalendario[Ano], dCalendario[Mês]), 
+        -- Filtra dias diferentes de Domingo (assumindo 1 = Domingo no WEEKDAY padrão)
+        WEEKDAY(dCalendario[Data], 1) <> 1
+        -- OPCIONAL: Se você tiver uma coluna de feriados na dCalendario, descomente a linha abaixo:
+        -- , dCalendario[EhFeriado] = FALSE()
+    )
+
+RETURN
+    DIVIDE(_ValorMensal, _DiasValidosMes, 0)
